@@ -101,6 +101,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 include { HIC_PLOT_DIST_VS_COUNTS } from '../modules/local/hicexplorer/hicPlotDistVsCounts' 
 include { MULTIQC } from '../modules/local/multiqc'
+include { CORIGAMI_FORMAT } from '../modules/local/corigami_format'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -195,6 +196,17 @@ workflow HIC {
     ch_map_res
   )
   ch_versions = ch_versions.mix(COOLER.out.versions)
+
+
+//
+// MODULE : CORIGAMI
+//
+
+
+if (!params.skip_cool && !params.skip_mcool) {
+    CORIGAMI_FORMAT ( COOLER.out.mcool )
+    ch_versions = ch_versions.mix(CORIGAMI_FORMAT.out.versions)
+}
 
   //
   // MODULE: HICEXPLORER/HIC_PLOT_DIST_VS_COUNTS
